@@ -1,0 +1,62 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: chained-steps-
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      steps:
+        - - name: logging-step
+            template: logger
+            arguments:
+              parameters:
+                - name: number
+                  value: 5
+
+        - - name: processing-step-A
+            template: processor
+            arguments:
+              parameters:
+                - name: number
+                  value: "{{steps.logging-step.outputs.parameters.number}}"
+          - name: processing-step-B
+            template: processor
+            arguments:
+              parameters:
+                - name: number
+                  value: "{{steps.logging-step.outputs.parameters.number}}"
+          - name: processing-step-C
+            template: processor
+            arguments:
+              parameters:
+                - name: number
+                  value: "{{steps.logging-step.outputs.parameters.number}}"
+
+    - name: logger
+      inputs:
+        parameters:
+          - name: number
+      container:
+        image: alpine:latest
+        command: [ sh, -c ]
+        args:
+          - echo Obtained number "{{inputs.parameters.number}}";
+            echo "{{inputs.parameters.number}}" > /tmp/output.txt
+      outputs:
+        parameters:
+          - name: number
+            valueFrom:
+              path: /tmp/output.txt
+
+    - name: processor
+      inputs:
+        parameters:
+            - name: number
+      container:
+        image: alpine:latest
+        command: [ sh, -c ]
+        args:
+          - number="{{inputs.parameters.number}}";
+            echo Processing number $number;
+            sleep $number;

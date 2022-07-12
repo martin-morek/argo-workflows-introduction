@@ -35,3 +35,13 @@ Create config map:
 Run workflow reading config map:
 
 ```argo submit -n argo k8s-config-map hello-from-config-map.yaml```
+
+### Steps
+
+Run chained steps:
+
+```argo submit -n argo steps/chained-steps.yaml --watch --serviceaccount argo```
+
+Run dynamic parallelization:
+
+```argo submit -n argo steps/multiple-steps.yaml --watch --serviceaccount argo```

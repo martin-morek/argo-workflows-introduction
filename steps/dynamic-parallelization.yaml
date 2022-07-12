@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: dynamic-parallelization-
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      steps:
+        - - name: generate-step
+            template: gen-number-list
+        - - name: parallel-step
+            template: processor
+            arguments:
+              parameters:
+                - name: number
+                  value: "{{item}}"
+            withParam: "{{steps.generate-step.outputs.result}}"
+
+    - name: gen-number-list
+      script:
+        image: python:alpine3.6
+        command: [python]
+        source: |
+          import json
+          import sys
+          json.dump([i for i in range(1, 10)], sys.stdout)
+
+    - name: processor
+      inputs:
+        parameters:
+          - name: number
+      container:
+        image: alpine:latest
+        command: [sh, -c]
+        args:
+          - number="{{inputs.parameters.number}}";
+            echo sleeping for $number;
+            sleep $number;
