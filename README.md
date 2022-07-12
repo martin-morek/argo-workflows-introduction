@@ -45,3 +45,17 @@ Run chained steps:
 Run dynamic parallelization:
 
 ```argo submit -n argo steps/multiple-steps.yaml --watch --serviceaccount argo```
+
+### Argo events
+This step requires creating topic on GCP and secret in K8s cluster (https://argoproj.github.io/argo-events/eventsources/gcp-pubsub/)
+
+Create EventSource:
+
+```kubectl apply -f events/pub-sub-event-source.yaml -n argo-events```
+
+Deploy Sensor:
+
+```kubectl apply -f events/pub-sub-logger.yaml -n argo-events```
+
+How to trigger:
+- publish message to the topic

@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: gcp-pubsub
+  namespace: argo-events
+spec:
+  pubSub:
+    example:
+      projectID: argo-workflow-355919
+      topic: argo
+      subscriptionID: argo-sub
+      credentialSecret:
+        name: pubsub-key
+        key: serviceAccountKey
