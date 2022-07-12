@@ -26,4 +26,12 @@ Run with custom parameter:
 
 ```argo submit -n argo intro/hello-world-param.yaml --watch -p name="Joe"``` 
 
+### Hello from config map
 
+Create config map:
+
+```kubectl apply -f k8s-config-map/cofig-map.yaml -n argo```
+
+Run workflow reading config map:
+
+```argo submit -n argo k8s-config-map hello-from-config-map.yaml```

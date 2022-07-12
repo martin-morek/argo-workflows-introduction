@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: hello-config-map-
+spec:
+  entrypoint: main
+  templates:
+    - name: main
+      container:
+        image: alpine:latest
+        command: [sh, -c]
+        envFrom:
+          - configMapRef:
+              name: app-config
+        args:
+          - echo Port configuration is $port;
